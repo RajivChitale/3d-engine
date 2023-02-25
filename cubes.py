@@ -69,6 +69,8 @@ class Coords:
     def calcRelative(self):
         return self.translate(-position[0:3]).roty(position[4]).rotx(position[3]).project()
 
+
+
 #render all lines
 def renderLines(linelist):
     for linedata in linelist:
@@ -84,12 +86,21 @@ def drawLine(a, b, clr):
     if(a.arr[2] > 0 or b.arr[2] > 0):
         mycanvas.create_line(a.arr[0], a.arr[1], b.arr[0], b.arr[1], fill=clr) #fix
 
+
+#settings
+blocksize = 10
+rendermax = 300
+sensitivity = 0.08
+
 #render all cubes
 def renderCubes(cubedict):
     for c in cubedict:
-        blocksize = 20
         clr = cubedict[c]
         x, y ,z = c[0], c[1], c[2] 
+        delta = abs(c[0:3] - position[0:3])
+        if any(d > rendermax for d in delta):
+            continue
+
         near1 = Coords(x, y, z).calcRelative()
         near2 = Coords(x, y+blocksize, z).calcRelative()
         near3 = Coords(x+blocksize, y+blocksize, z).calcRelative()
@@ -117,8 +128,7 @@ def renderCubes(cubedict):
 
 def getCubeCorner():
     global cubes
-    blocksize = 20
-    a = Coords(0,0,60)
+    a = Coords(0,0,30)
     a = a.rotx(-position[3]).roty(-position[4]).translate(position[0:3])
     a.arr[0:3] -= (a.arr[0:3] % blocksize)
     return (a.arr[0], a.arr[1], a.arr[2])
@@ -180,16 +190,16 @@ def key_pressed(event):
 
     # pitch up
     if event.char == 'i':
-        position[3] -= 0.05 # here, -theta towards +y
+        position[3] -= sensitivity # here, -theta towards +y
     # pitch down
     if event.char == 'k':
-        position[3] += 0.05
+        position[3] += sensitivity
     # yaw left
     if event.char == 'j':
-        position[4] -= 0.05
+        position[4] -= sensitivity
     # yaw right
     if event.char == 'l':
-        position[4] += 0.05
+        position[4] += sensitivity
         
 #    # roll left
 #    if event.char == 'o':
