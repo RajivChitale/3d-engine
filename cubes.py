@@ -69,7 +69,7 @@ class Coords:
     def calcRelative(self):
         return self.translate(-position[0:3]).roty(position[4]).rotx(position[3]).project()
 
-
+#render all lines
 def renderLines(linelist):
     for linedata in linelist:
         a = linedata[0].calcRelative()
@@ -79,19 +79,25 @@ def renderLines(linelist):
         if(a.arr[2] > 0 or b.arr[2] > 0):
             mycanvas.create_line(a.arr[0], a.arr[1], b.arr[0], b.arr[1], fill=clr) #fix
 
+#draw a single line given transformed coordinates
+def drawLine(a, b, clr):
+    if(a.arr[2] > 0 or b.arr[2] > 0):
+        mycanvas.create_line(a.arr[0], a.arr[1], b.arr[0], b.arr[1], fill=clr) #fix
+
+#render all cubes
 def renderCubes(cubedict):
     for c in cubedict:
         blocksize = 20
         clr = cubedict[c]
         x, y ,z = c[0], c[1], c[2] 
-        near1 = Coords(x, y, z)
-        near2 = Coords(x, y+blocksize, z)
-        near3 = Coords(x+blocksize, y+blocksize, z)
-        near4 = Coords(x+blocksize, y, z)
-        far1 = Coords(x, y, z+blocksize)
-        far2 = Coords(x, y+blocksize, z+blocksize)
-        far3 = Coords(x+blocksize, y+blocksize, z+blocksize)
-        far4 = Coords(x+blocksize, y, z+blocksize)
+        near1 = Coords(x, y, z).calcRelative()
+        near2 = Coords(x, y+blocksize, z).calcRelative()
+        near3 = Coords(x+blocksize, y+blocksize, z).calcRelative()
+        near4 = Coords(x+blocksize, y, z).calcRelative()
+        far1 = Coords(x, y, z+blocksize).calcRelative()
+        far2 = Coords(x, y+blocksize, z+blocksize).calcRelative()
+        far3 = Coords(x+blocksize, y+blocksize, z+blocksize).calcRelative()
+        far4 = Coords(x+blocksize, y, z+blocksize).calcRelative()
         temp = [   
             [near1,near2, clr],
             [near2,near3, clr],
@@ -106,7 +112,8 @@ def renderCubes(cubedict):
             [near3,far3, clr],
             [near4,far4, clr]
         ]
-        renderLines(temp)
+        for l in temp:
+            drawLine(l[0], l[1], clr)
 
 def getCubeCorner():
     global cubes
